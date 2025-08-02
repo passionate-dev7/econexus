@@ -38,6 +38,9 @@ Creating a sustainable future by bridging grassroots conservation efforts with i
 - Premium pricing for verified sustainable products
 - Real-time impact visualization
 
+### Demo Video 
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -49,7 +52,7 @@ Creating a sustainable future by bridging grassroots conservation efforts with i
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/econexus.git
+git clone https://github.com/passionate-dev7/econexus.git
 cd econexus
 ```
 
@@ -65,7 +68,7 @@ cp .env.local.example .env.local
 
 Edit `.env.local` with your credentials:
 ```env
-HEDERA_OPERATOR_ID=0.0.xxxxx
+NEXT_PUBLIC_HEDERA_OPERATOR_ID=0.0.xxxxx
 HEDERA_OPERATOR_KEY=302e...
 OPENAI_API_KEY=sk-proj-...
 ```

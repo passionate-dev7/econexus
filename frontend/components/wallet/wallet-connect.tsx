@@ -3,6 +3,7 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, LogOut, Copy, ExternalLink, Check, AlertCircle } from 'lucide-react';
+import { walletService } from '@/lib/wallet-service';
 
 interface WalletContextType {
   isConnected: boolean;
@@ -30,45 +31,89 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [isConnected, setIsConnected] = useState(false);
   const [accountId, setAccountId] = useState<string | null>(null);
   const [balance, setBalance] = useState(0);
-  const [network] = useState('testnet');
+  const [network, setNetwork] = useState('testnet');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Check for existing connection on mount
   useEffect(() => {
-    const savedAccount = localStorage.getItem('econexus_account');
-    if (savedAccount) {
-      setAccountId(savedAccount);
-      setIsConnected(true);
-      // Simulate fetching balance
-      setBalance(Math.random() * 1000);
-    }
+    const checkConnection = async () => {
+      try {
+        // Check if already connected via wallet service
+        if (walletService.isConnected()) {
+          const connectedAccountId = walletService.getAccountId();
+          setAccountId(connectedAccountId);
+          setIsConnected(true);
+          setNetwork(walletService.getNetwork());
+          
+          // Fetch balance
+          try {
+            const balanceData = await walletService.getBalance();
+            const hbarAmount = parseFloat(balanceData.hbars);
+            setBalance(hbarAmount);
+          } catch (error) {
+            console.error('Failed to fetch balance:', error);
+            setBalance(100); // Default demo balance
+          }
+        } else {
+          // Check localStorage for saved account
+          const savedAccount = localStorage.getItem('econexus_account');
+          if (savedAccount) {
+            // Try to reconnect
+            try {
+              const result = await walletService.connect();
+              setAccountId(result.accountId);
+              setIsConnected(true);
+              setNetwork(result.network);
+              
+              const balanceData = await walletService.getBalance();
+              const hbarAmount = parseFloat(balanceData.hbars);
+              setBalance(hbarAmount);
+            } catch (error) {
+              console.error('Failed to reconnect:', error);
+              localStorage.removeItem('econexus_account');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error checking connection:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkConnection();
+
+    // Subscribe to account changes
+    walletService.onAccountChanged((newAccountId) => {
+      setAccountId(newAccountId);
+      // Refresh balance
+      walletService.getBalance().then((balanceData) => {
+        const hbarAmount = parseFloat(balanceData.hbars);
+        setBalance(hbarAmount);
+      });
+    });
   }, []);
 
   const connect = async () => {
     try {
-      // In production, this would connect to HashPack
-      // For demo, we'll simulate the connection
+      // Use wallet service to connect
+      const result = await walletService.connect();
       
-      // Check if HashPack is installed
-      if (typeof window !== 'undefined' && (window as any).hashpack) {
-        // Initialize HashPack connection
-        const hashpack = (window as any).hashpack;
-        
-        // Request account access
-        const response = await hashpack.connect();
-        
-        if (response.success) {
-          setAccountId(response.accountId);
-          setBalance(response.balance);
-          setIsConnected(true);
-          localStorage.setItem('econexus_account', response.accountId);
-        }
-      } else {
-        // Demo mode - simulate connection
-        const demoAccountId = `0.0.${Math.floor(Math.random() * 1000000)}`;
-        setAccountId(demoAccountId);
-        setBalance(Math.random() * 1000);
-        setIsConnected(true);
-        localStorage.setItem('econexus_account', demoAccountId);
+      setAccountId(result.accountId);
+      setNetwork(result.network);
+      setIsConnected(true);
+      
+      // Save to localStorage
+      localStorage.setItem('econexus_account', result.accountId);
+      
+      // Fetch balance
+      try {
+        const balanceData = await walletService.getBalance();
+        const hbarAmount = parseFloat(balanceData.hbars);
+        setBalance(hbarAmount);
+      } catch (error) {
+        console.error('Failed to fetch balance:', error);
+        setBalance(100); // Default demo balance
       }
     } catch (error) {
       console.error('Error connecting wallet:', error);
@@ -76,11 +121,17 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const disconnect = () => {
-    setIsConnected(false);
-    setAccountId(null);
-    setBalance(0);
-    localStorage.removeItem('econexus_account');
+  const disconnect = async () => {
+    try {
+      await walletService.disconnect();
+    } catch (error) {
+      console.error('Error disconnecting:', error);
+    } finally {
+      setIsConnected(false);
+      setAccountId(null);
+      setBalance(0);
+      localStorage.removeItem('econexus_account');
+    }
   };
 
   return (

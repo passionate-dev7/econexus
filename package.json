@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@hashgraph/hedera-wallet-connect": "^1.5.1"
+  }
+}

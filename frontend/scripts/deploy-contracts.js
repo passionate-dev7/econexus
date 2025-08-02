@@ -5,7 +5,7 @@ require("dotenv").config();
 
 async function deployContracts() {
     // Configure client
-    const operatorId = AccountId.fromString(process.env.HEDERA_OPERATOR_ID);
+    const operatorId = AccountId.fromString(process.env.NEXT_PUBLIC_HEDERA_OPERATOR_ID);
     const operatorKey = PrivateKey.fromStringDer(process.env.HEDERA_OPERATOR_KEY);
     
     const client = Client.forTestnet().setOperator(operatorId, operatorKey);

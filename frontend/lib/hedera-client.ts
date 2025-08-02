@@ -1,20 +1,20 @@
 import { Client, PrivateKey, AccountId, TopicCreateTransaction, TopicMessageSubmitTransaction, TokenCreateTransaction, TokenType, TokenSupplyType, TransferTransaction, Hbar } from '@hashgraph/sdk';
-import { HederaAgentAPI } from 'hedera-agent-kit';
+import { HederaAgentKit } from 'hedera-agent-kit';
 
 export class HederaService {
   private client: Client;
   private operatorId: AccountId;
   private operatorKey: PrivateKey;
-  private agentAPI?: HederaAgentAPI;
+  private agentAPI;
 
   constructor() {
     const network = process.env.NEXT_PUBLIC_HEDERA_NETWORK || 'testnet';
     
-    if (!process.env.HEDERA_OPERATOR_ID || !process.env.HEDERA_OPERATOR_KEY) {
+    if (!process.env.NEXT_PUBLIC_HEDERA_OPERATOR_ID || !process.env.HEDERA_OPERATOR_KEY) {
       throw new Error('Hedera credentials not configured');
     }
 
-    this.operatorId = AccountId.fromString(process.env.HEDERA_OPERATOR_ID);
+    this.operatorId = AccountId.fromString(process.env.NEXT_PUBLIC_HEDERA_OPERATOR_ID);
     this.operatorKey = PrivateKey.fromStringDer(process.env.HEDERA_OPERATOR_KEY);
 
     this.client = network === 'mainnet' 
@@ -24,7 +24,7 @@ export class HederaService {
     this.client.setOperator(this.operatorId, this.operatorKey);
     
     // Initialize Hedera Agent Kit
-    this.agentAPI = new HederaAgentAPI({
+    this.agentAPI = new HederaAgentKit({
       client: this.client,
       configuration: {
         plugins: []

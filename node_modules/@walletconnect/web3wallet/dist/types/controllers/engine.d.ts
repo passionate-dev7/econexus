@@ -1,0 +1,40 @@
+import { IAuthClient } from "@walletconnect/auth-client";
+import { ISignClient } from "@walletconnect/types";
+import { IWeb3WalletEngine } from "../types";
+export declare class Engine extends IWeb3WalletEngine {
+    signClient: ISignClient;
+    authClient: IAuthClient;
+    constructor(client: IWeb3WalletEngine["client"]);
+    init: () => Promise<void>;
+    pair: IWeb3WalletEngine["pair"];
+    approveSession: IWeb3WalletEngine["approveSession"];
+    rejectSession: IWeb3WalletEngine["rejectSession"];
+    updateSession: IWeb3WalletEngine["updateSession"];
+    extendSession: IWeb3WalletEngine["extendSession"];
+    respondSessionRequest: IWeb3WalletEngine["respondSessionRequest"];
+    disconnectSession: IWeb3WalletEngine["disconnectSession"];
+    emitSessionEvent: IWeb3WalletEngine["emitSessionEvent"];
+    getActiveSessions: IWeb3WalletEngine["getActiveSessions"];
+    getPendingSessionProposals: IWeb3WalletEngine["getPendingSessionProposals"];
+    getPendingSessionRequests: IWeb3WalletEngine["getPendingSessionRequests"];
+    respondAuthRequest: IWeb3WalletEngine["respondAuthRequest"];
+    getPendingAuthRequests: IWeb3WalletEngine["getPendingAuthRequests"];
+    formatMessage: IWeb3WalletEngine["formatMessage"];
+    approveSessionAuthenticate: IWeb3WalletEngine["approveSessionAuthenticate"];
+    rejectSessionAuthenticate: IWeb3WalletEngine["rejectSessionAuthenticate"];
+    formatAuthMessage: IWeb3WalletEngine["formatAuthMessage"];
+    registerDeviceToken: IWeb3WalletEngine["registerDeviceToken"];
+    on: IWeb3WalletEngine["on"];
+    once: IWeb3WalletEngine["once"];
+    off: IWeb3WalletEngine["off"];
+    removeListener: IWeb3WalletEngine["removeListener"];
+    private onSessionRequest;
+    private onSessionProposal;
+    private onSessionDelete;
+    private onAuthRequest;
+    private onProposalExpire;
+    private onSessionRequestExpire;
+    private onSessionRequestAuthenticate;
+    private setEvent;
+}
+//# sourceMappingURL=engine.d.ts.map
