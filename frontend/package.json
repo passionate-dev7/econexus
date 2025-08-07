@@ -11,7 +11,10 @@
     "preview": "next build && next start",
     "typecheck": "tsc --noEmit",
     "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
-    "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache"
+    "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache",
+    "deploy:contracts": "node scripts/deploy-contracts.js",
+    "test:contracts": "hardhat test",
+    "compile:contracts": "hardhat compile"
   },
   "dependencies": {
     "@hashgraph/sdk": "^2.70.0",
